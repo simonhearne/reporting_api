@@ -102,4 +102,4 @@ reporting-endpoints:     default="https://<reporting-endpoint>[/<path>]"
 
 Data stream of Reporting API Events.
 
-{{fields "reporting_api"}}
+{{fields "events"}}

@@ -104,5 +104,48 @@ Data stream of Reporting API Events.
 
 **Exported fields**
 
-(no fields available)
+| Field | Description | Type |
+|---|---|---|
+| @timestamp | Event timestamp. | date |
+| cloud.image.id | Image ID for the cloud instance. | keyword |
+| container.labels | Image labels. | object |
+| data_stream.dataset | Data stream dataset name. | constant_keyword |
+| data_stream.namespace | Data stream namespace. | constant_keyword |
+| data_stream.type | Data stream type. | constant_keyword |
+| ecs.version | ECS version used in the event | keyword |
+| error.culprit | Culprit responsible for the error | keyword |
+| error.exception.message | Exception message for the error | text |
+| error.grouping_key | Grouping key for the error | keyword |
+| error.grouping_name | Grouping name for the error | text |
+| error.id | Unique identifier for the error | keyword |
+| error.type | Type of error (e.g., csp-report, crash) | keyword |
+| event.created | Timestamp when the event was created | date |
+| event.dataset | Event dataset | constant_keyword |
+| event.ingested | Timestamp when the event was ingested | date |
+| event.module | Event module | constant_keyword |
+| event.original | Original event message before processing | text |
+| host.containerized | If the host is a container. | boolean |
+| host.os.build | OS build information. | keyword |
+| host.os.codename | OS codename, if any. | keyword |
+| input.type | Type of Filebeat input. | keyword |
+| message | Human-readable message describing the event | text |
+| observer.type | Type of observer (e.g., reporting-api) | keyword |
+| processor.event | Processor event type (e.g., error) | keyword |
+| reporting_api.body.blockedURL | Blocked URL from the CSP report | keyword |
+| reporting_api.body.disposition | Disposition from the CSP report | keyword |
+| reporting_api.body.documentURL | Document URL from the CSP report | keyword |
+| reporting_api.body.effectiveDirective | Effective directive from the CSP report | keyword |
+| reporting_api.body.originalPolicy | Original policy from the CSP report | text |
+| reporting_api.body.referrer | Referrer URL from the CSP report | keyword |
+| reporting_api.body.sample | Script sample from the CSP report | text |
+| reporting_api.body.sourceFile | Source file from the CSP report | keyword |
+| reporting_api.body.statusCode | Status code from the CSP report | integer |
+| reporting_api.type | Type of Reporting API event (e.g., csp-report, crash) | keyword |
+| reporting_api.url | URL associated with the Reporting API event | keyword |
+| service.environment | APM service environment this integration is linked to | keyword |
+| service.name | APM service name this integration is linked to | keyword |
+| tags | Tags associated with the event | keyword |
+| url.full | Full URL associated with the event | keyword |
+| url.original | Original URL associated with the event | keyword |
+| user_agent.original | Original user agent string | keyword |
 
