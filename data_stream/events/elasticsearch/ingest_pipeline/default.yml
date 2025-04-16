@@ -1,0 +1,300 @@
+---
+description: Pipeline to process Reporting API events
+processors:
+  - set:
+      tag: set_ecs_version
+      field: ecs.version
+      value: 8.11.0
+  - set:
+      tag: set_processor_event
+      field: processor.event
+      value: error
+      if: ctx?._tmp?.o11y_fields_enabled == true
+  - set:
+      tag: set_observer_type
+      field: observer.type
+      value: reporting-api
+  - set:
+      tag: copy_original_message
+      ignore_empty_value: true
+      field: originalMessage
+      copy_from: message
+  - rename:
+      tag: rename_original_message
+      ignore_missing: true
+      if: ctx.event?.original == null
+      field: originalMessage
+      target_field: event.original
+  - remove:
+      tag: remove_copied_message
+      ignore_missing: true
+      if: ctx.event?.original != null
+      field: originalMessage
+  - remove:
+      tag: remove_message_field
+      ignore_missing: true
+      field: message
+  - json:
+      tag: parse_json_original
+      field: event.original
+      target_field: reporting_api
+  - dot_expander:
+      tag: expand_dot_notation
+      field: "*"
+      path: reporting_api
+  - rename:
+      tag: rename_csp_violation
+      field: reporting_api.csp-violation
+      target_field: reporting_api.csp-report
+      ignore_missing: true
+      if: ctx?.reporting_api?.containsKey("csp-violation")
+  - set:
+      tag: set_report_uri_flag
+      field: report_uri
+      value: true
+      if: ctx?.reporting_api?.containsKey("csp-report")
+  - set:
+      tag: initialize_reporting_api_age
+      field: reporting_api.age
+      value: 0
+      override: false
+  - rename:
+      tag: rename_document_uri
+      field: reporting_api.csp-report.document-uri
+      target_field: reporting_api.body.documentURL
+      ignore_missing: true
+      if: ctx?.report_uri == true
+  - rename:
+      tag: rename_referrer
+      field: reporting_api.csp-report.referrer
+      target_field: reporting_api.body.referrer
+      ignore_missing: true
+      if: ctx?.report_uri == true
+  - rename:
+      tag: rename_violated_directive
+      field: reporting_api.csp-report.violated-directive
+      target_field: reporting_api.body.effectiveDirective
+      ignore_missing: true
+      if: ctx?.report_uri == true
+  - rename:
+      tag: rename_original_policy
+      field: reporting_api.csp-report.original-policy
+      target_field: reporting_api.body.originalPolicy
+      ignore_missing: true
+      if: ctx?.report_uri == true
+  - rename:
+      tag: rename_disposition
+      field: reporting_api.csp-report.disposition
+      target_field: reporting_api.body.disposition
+      ignore_missing: true
+      if: ctx?.report_uri == true
+  - rename:
+      tag: rename_blocked_uri
+      field: reporting_api.csp-report.blocked-uri
+      target_field: reporting_api.body.blockedURL
+      ignore_missing: true
+      if: ctx?.report_uri == true
+  - rename:
+      tag: rename_status_code
+      field: reporting_api.csp-report.status-code
+      target_field: reporting_api.body.statusCode
+      ignore_missing: true
+      if: ctx?.report_uri == true
+  - rename:
+      tag: rename_script_sample
+      field: reporting_api.csp-report.script-sample
+      target_field: reporting_api.body.sample
+      ignore_missing: true
+      if: ctx?.report_uri == true
+  - rename:
+      tag: rename_source_file
+      field: reporting_api.csp-report.source-file
+      target_field: reporting_api.body.sourceFile
+      ignore_missing: true
+      if: ctx?.report_uri == true
+  - set:
+      tag: set_reporting_api_type
+      field: reporting_api.type
+      value: csp-report
+      if: ctx?.report_uri == true
+  - set:
+      tag: set_reporting_api_url
+      field: reporting_api.url
+      copy_from: reporting_api.body.documentURL
+      override: false
+      ignore_empty_value: true
+  - set:
+      tag: set_event_ingested
+      field: event.ingested
+      copy_from: _ingest.timestamp
+      ignore_empty_value: true
+  - script:
+      tag: set_event_created_time
+      description: Sets event.created to the current time.
+      lang: painless
+      source: |
+        long ageInMillis = ctx.reporting_api.age != null ? ctx.reporting_api.age : 0;
+        String ingestTimestamp = ctx.event.ingested.toString();
+        Instant ingestTime = Instant.parse(ingestTimestamp);
+        Instant originalEventTime = ingestTime.minusMillis(ageInMillis);
+        ctx.event.created = originalEventTime.toString();
+      ignore_failure: true
+  - rename:
+      tag: rename_error_id
+      ignore_missing: true
+      field: reporting_api.body.id
+      target_field: error.id
+      if: ctx?._tmp?.o11y_fields_enabled == true
+  - rename:
+      tag: rename_error_message
+      ignore_missing: true
+      field: reporting_api.body.message
+      target_field: message
+  - set:
+      tag: set_csp_blocked_message
+      field: message
+      value: "CSP Blocked ({{reporting_api.body.effectiveDirective}}): {{reporting_api.body.blockedURL}}"
+      if: ctx?.reporting_api?.type == 'csp-report' || ctx?.reporting_api?.type == 'csp-violation'
+  - set:
+      tag: set_crash_message
+      field: message
+      value: "Crash: {{reporting_api.url}}"
+      if: ctx?.reporting_api?.type == 'crash'
+  - set:
+      tag: set_network_error_message
+      field: message
+      value: "Network Error ({{reporting_api.body.type}}): {{reporting_api.url}}"
+      if: ctx?.reporting_api?.type == 'network-error'
+  - set:
+      tag: set_intervention_message
+      field: message
+      value: "Intervention: {{message}}"
+      if: ctx?.reporting_api?.type == 'intervention'
+  - set:
+      tag: set_deprecation_message
+      field: message
+      value: "Deprecation: {{message}}"
+      if: ctx?.reporting_api?.type == 'deprecation'
+  - set:
+      tag: copy_error_exception_message
+      ignore_empty_value: true
+      field: error.exception.message
+      copy_from: message
+      if: ctx?._tmp?.o11y_fields_enabled == true
+  - set:
+      tag: copy_error_grouping_name
+      ignore_empty_value: true
+      field: error.grouping_name
+      copy_from: message
+      if: ctx?._tmp?.o11y_fields_enabled == true
+  - fingerprint:
+      tag: generate_error_fingerprint
+      ignore_missing: true
+      fields: [error.grouping_name]
+      target_field: error.grouping_key
+      if: ctx?._tmp?.o11y_fields_enabled == true
+  - rename:
+      tag: rename_url_original
+      ignore_missing: true
+      field: reporting_api.body.sourceFile
+      target_field: url.original
+  - set:
+      tag: set_error_type
+      ignore_empty_value: true
+      field: error.type
+      copy_from: reporting_api.type
+      if: ctx?._tmp?.o11y_fields_enabled == true
+  - set:
+      tag: set_error_culprit
+      ignore_empty_value: true
+      field: error.culprit
+      copy_from: reporting_api.type
+      if: ctx?._tmp?.o11y_fields_enabled == true
+  - rename:
+      tag: rename_url_full
+      ignore_missing: true
+      field: reporting_api.url
+      target_field: url.full
+  - rename:
+      tag: rename_user_agent
+      ignore_missing: true
+      field: reporting_api.user_agent
+      target_field: user_agent.original
+  - user_agent:
+      tag: process_user_agent
+      ignore_missing: true
+      field: user_agent.original
+      target_field: user_agent
+  - rename:
+      tag: rename_client_ip
+      ignore_missing: true
+      field: headers.X-Forwarded-For
+      target_field: client.ip
+  - geoip:
+      tag: process_geoip
+      ignore_missing: true
+      field: client.ip
+      target_field: client.geo
+  - remove:
+      tag: remove_report_uri
+      ignore_missing: true
+      field: report_uri
+  - remove:
+      tag: remove_csp_report
+      ignore_missing: true
+      field: reporting_api.csp-report
+  - remove:
+      tag: remove_json_field
+      ignore_missing: true
+      field: json
+  - remove:
+      tag: remove_agent_fields
+      ignore_missing: true
+      field:
+        - cloud
+        - host
+        - container
+        - agent
+      if: ctx?._tmp?.remove_agent_fields == true
+  - remove:
+      tag: remove_utils_fields
+      ignore_missing: true
+      field:
+        - _tmp
+  - script:
+      tag: drop_null_empty_values
+      description: Drops null/empty values recursively.
+      lang: painless
+      source: |
+        boolean dropEmptyFields(Object object) {
+          if (object == null || object == "") {
+            return true;
+          } else if (object instanceof Map) {
+            ((Map) object).values().removeIf(value -> dropEmptyFields(value));
+            return (((Map) object).size() == 0);
+          } else if (object instanceof List) {
+            ((List) object).removeIf(value -> dropEmptyFields(value));
+            return (((List) object).length == 0);
+          }
+          return false;
+        }
+        dropEmptyFields(ctx);
+  - remove:
+      tag: remove_event_original
+      ignore_failure: true
+      ignore_missing: true
+      if: ctx?.tags == null || !(ctx.tags.contains("preserve_original_event"))
+      field: event.original
+on_failure:
+  - append:
+      tag: append_error_message
+      field: error.message
+      value: >-
+        Processor {{{_ingest.on_failure_processor_type}}} with tag
+        {{{_ingest.on_failure_processor_tag}}} in pipeline
+        {{{_ingest.on_failure_pipeline}}} failed with message:
+        {{{_ingest.on_failure_message}}}
+  - set:
+      tag: set_pipeline_error_kind
+      field: event.kind
+      value: pipeline_error

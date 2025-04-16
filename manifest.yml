@@ -1,0 +1,30 @@
+format_version: 3.1.4
+name: reporting_api
+title: Reporting API Events
+version: 0.2.0
+description: >-
+  This integration accepts reporting API events such as content-security-policy violation reports, crash logs and network error logs.
+type: integration
+categories:
+  - security
+  - observability
+conditions:
+  kibana:
+    version: ^8.13.0
+policy_templates:
+  - name: reporting_api
+    title: Reporting API Events
+    description: >-
+      This integration accepts reporting API events such as content-security-policy violation reports, crash logs and network error logs.
+    inputs:
+      - type: http_endpoint
+        title: 'Reporting API Events : http_endpoint'
+        description: 'CSP violations, Network Error Logs, Browser Crash events'
+owner:
+  github: 'simonhearne'
+  type: community
+icons:
+  - src: /img/logo.svg
+    title: Reporting API Events Logo
+    size: 32x32
+    type: image/svg+xml

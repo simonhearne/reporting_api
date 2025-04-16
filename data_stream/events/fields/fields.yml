@@ -1,0 +1,105 @@
+- name: service.name
+  type: keyword
+  description: APM service name this integration is linked to
+- name: service.environment
+  type: keyword
+  description: APM service environment this integration is linked to
+- name: ecs.version
+  type: keyword
+  description: ECS version used in the event
+- name: processor.event
+  type: keyword
+  description: Processor event type (e.g., error)
+- name: observer.type
+  type: keyword
+  description: Type of observer (e.g., reporting-api)
+- name: event
+  type: group
+  fields:
+    - name: original
+      type: text
+      description: Original event message before processing
+    - name: ingested
+      type: date
+      description: Timestamp when the event was ingested
+    - name: created
+      type: date
+      description: Timestamp when the event was created
+- name: reporting_api
+  type: group
+  fields:
+    - name: body
+      type: group
+      fields:
+        - name: documentURL
+          type: keyword
+          description: Document URL from the CSP report
+        - name: referrer
+          type: keyword
+          description: Referrer URL from the CSP report
+        - name: effectiveDirective
+          type: keyword
+          description: Effective directive from the CSP report
+        - name: originalPolicy
+          type: text
+          description: Original policy from the CSP report
+        - name: disposition
+          type: keyword
+          description: Disposition from the CSP report
+        - name: blockedURL
+          type: keyword
+          description: Blocked URL from the CSP report
+        - name: statusCode
+          type: integer
+          description: Status code from the CSP report
+        - name: sample
+          type: text
+          description: Script sample from the CSP report
+        - name: sourceFile
+          type: keyword
+          description: Source file from the CSP report
+    - name: type
+      type: keyword
+      description: Type of Reporting API event (e.g., csp-report, crash)
+    - name: url
+      type: keyword
+      description: URL associated with the Reporting API event
+- name: error
+  type: group
+  fields:
+    - name: id
+      type: keyword
+      description: Unique identifier for the error
+    - name: type
+      type: keyword
+      description: Type of error (e.g., csp-report, crash)
+    - name: exception.message
+      type: text
+      description: Exception message for the error
+    - name: grouping_name
+      type: text
+      description: Grouping name for the error
+    - name: grouping_key
+      type: keyword
+      description: Grouping key for the error
+    - name: culprit
+      type: keyword
+      description: Culprit responsible for the error
+- name: url.original
+  type: keyword
+  description: Original URL associated with the event
+- name: url.full
+  type: keyword
+  description: Full URL associated with the event
+- name: user_agent
+  type: group
+  fields:
+    - name: original
+      type: keyword
+      description: Original user agent string
+- name: message
+  type: text
+  description: Human-readable message describing the event
+- name: tags
+  type: keyword
+  description: Tags associated with the event

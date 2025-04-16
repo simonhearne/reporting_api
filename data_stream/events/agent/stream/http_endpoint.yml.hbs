@@ -1,0 +1,60 @@
+{{#if listen_address}}
+listen_address: {{listen_address}}
+{{/if}}
+{{#if listen_port}}
+listen_port: {{listen_port}}
+{{/if}}
+{{#if prefix}}
+prefix: {{prefix}}
+{{/if}}
+{{#if preserve_original_event}}
+preserve_original_event: {{preserve_original_event}}
+{{/if}}
+content_type: ""
+{{#if response_code}}
+response_code: {{response_code}}
+{{/if}}
+{{#if response_body}}
+response_body: '{{response_body}}'
+{{/if}}
+{{#if url}}
+url: {{url}}
+{{/if}}
+include_headers:
+  - X-Forwarded-For
+{{#if include_headers}}
+{{#each include_headers as |header|}}
+  - {{header}}
+{{/each}}
+{{/if}}
+{{#if tracer_enabled}}
+tracer.enabled: true
+tracer.filename: http-request-trace-*.ndjson
+{{/if}}
+tags:
+{{#if preserve_original_event}}
+  - preserve_original_event
+{{/if}}
+{{#each tags as |tag|}}
+  - {{tag}}
+{{/each}}
+{{#contains "forwarded" tags}}
+publisher_pipeline.disable_host: true
+{{/contains}}
+processors:
+{{#if processors}}
+{{processors}}
+{{/if}}
+  - add_fields:
+      target: service
+      fields:
+        name: {{service.name}}
+        {{#if service.environment}}
+        environment: {{service.environment}}
+        {{/if}}
+  - add_fields:
+      target: _tmp
+      fields:
+        remove_agent_fields: {{remove_agent_fields}}
+        o11y_fields_enabled: {{o11y_fields_enabled}}
+        

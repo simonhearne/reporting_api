@@ -1,0 +1,6 @@
+# newer versions go on top
+- version: "0.2.0"
+  changes:
+    - description: Stable pre-release version
+      type: enhancement
+      link: https://test.link/
