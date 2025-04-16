@@ -25,12 +25,14 @@ This integration supports all report types from all API specifications.
 
 ## Limitations
 
-Currently the Agent integration cannot exist independently, as the filebeat http_endpoint module does not support the HTTP OPTIONS preflight request mechanism.
-Until [#43930](https://github.com/elastic/beats/issues/43930) is resolved you will require a reverse proxy or edge function to respond correctly to the browser preflight requests. The issue above documents the requirements.
+Currently the Agent integration cannot exist independently, as the filebeat `http_endpoint` module does not support the HTTP OPTIONS preflight request mechanism.
+Until [#43930](https://github.com/elastic/beats/issues/43930) is resolved you will require a reverse proxy or edge function / worker to respond correctly to browser preflight requests. The issue above documents the requirements.
 
-If you choose to add the `logs-reporting_api.*` data stream to the Observability application settings for error documents, clicking on an error group from the Observability application will currently result in an error. This is because the Reporting API events cannot be associated with any specific transaction, the APIs are privacy-preserving and all events are anonymous.
+If you choose to add the `logs-reporting_api.*` data stream to the Observability application settings for error documents, clicking on an error group from the Observability application will currently result in an error. This is because the Reporting API events cannot be associated with any specific transaction - the APIs are privacy-preserving and all events are anonymous.
 
 Browser support is complex. Some browsers will include a `user-agent` header in their reports, others won't. Some will send permissions policy violation reports, others won't. The reports received by this integration are to be considered a sample and not representative of all browsers.
+
+**Importantly** this is not an official Elastic integration and no warrantee or support is offered at this time.
 
 ## Requirements
 
@@ -40,16 +42,24 @@ Browser support is complex. Some browsers will include a `user-agent` header in 
 
 ## Setup
 
-There are a number of steps required to configure the Reporting API Events integration:
+Firstly, download the latest release version from [GitHub](https://github.com/simonhearne/reporting_api) as a zip archive. Then upload to Kibana using the following cURL command or equivalent with a Kibana user with [required privileges](https://www.elastic.co/docs/reference/fleet/fleet-roles-privileges):
 
-1. Enable the integration on one or more hosts
-    * Configure the service name and environment (optional) variables in the integration policy, and optionally set a path for the integration to listen on
-1. Create a DNS name which resolves to these hosts, optionally via a content delivery network to simplify TLS configuration
-1. Create or update the relevant response headers on your HTML documents (e.g. `content-security-policy report-to`, `reporting-endpoints`, `nel`, `permissions-policy` etc.) to include the new reporting endpoint, including the relevant path if configured
+```cURL
+curl -XPOST \             
+  -H 'content-type: application/zip' \
+  -H 'kbn-xsrf: true' \
+  https://<kibana-host>/api/fleet/epm/packages \
+  -u <username>:<password> \
+  --data-binary @reporting_api-<version>.zip
+```
+
+1. Add the integration to an agent policy with at least one agent. Add one integration per service name, multiple integrations can run on the same agent host.
+1. Create a DNS name which resolves to the agent host(s), optionally via a content delivery network to simplify TLS configuration
+1. Create or update the relevant response headers on your HTML documents (e.g. `report-to`, `report-uri`, `reporting-endpoints`) to include the new reporting endpoint, including the relevant path if configured in the integration
 1. Validate that events are appearing in the `logs-reporting_api.*` data stream
 1. (optionally) update the `Indices` [settings](https://www.elastic.co/docs/solutions/observability/apm/applications-ui-settings#apm-indices-settings) in the Observability application to include the `logs-reporting_api.*` data stream in the `Error Indices` input
 
-**Temporarily**: a CDN configuration or reverse proxy is required to return a valid response to preflight requests, as documented in [#43930](https://github.com/elastic/beats/issues/43930).
+**Temporarily**: a CDN configuration or reverse proxy is required to return a valid response to preflight requests from browsers, as documented in [#43930](https://github.com/elastic/beats/issues/43930).
 
 There are a number of configuration items available in the integration:
 
@@ -82,15 +92,9 @@ reporting-endpoints:     default="https://<reporting-endpoint>[/<path>]"
 ## Roadmap
 
 * [ ]  Add comprehensive tests
-* [ ]  Create saved view and include in integration
-* [ ]  Document difference between CSP violation / report
+* [ ]  Add data view and saved searches
 * [ ]  Add Dashboards to integration package (Overview, CSP, NEL, Crash, Permissions Policy, Deprecations, etc.)
-* [ ]  Stacktraces where appropriate
-* [ ]  Document lack of support for specific features
-    * [ ]  No User Agent information in `report-uri`? Seen for Safari & Firefox
-    * [ ]  `report-uri` = [96%](https://caniuse.com/mdn-http_headers_content-security-policy_report-uri)
-    * [ ]  `report-to` = [74%](https://caniuse.com/mdn-http_headers_report-to)
-    * [ ]  `reporting-endpoints` = [88.8%](https://caniuse.com/mdn-http_headers_reporting-endpoints)
+* [ ]  Add Stacktraces where appropriate
 
 ## Logs
 
