@@ -1,0 +1,37 @@
+{
+  "attributes": {
+    "columns": [
+      "message",
+      "reporting_api.type",
+      "user_agent.name",
+      "client.geo.country_name"
+    ],
+    "description": "",
+    "grid": {},
+    "hideChart": false,
+    "isTextBasedQuery": false,
+    "kibanaSavedObjectMeta": {
+      "searchSourceJSON": "{\"query\":{\"query\":\"\",\"language\":\"kuery\"},\"filter\":[],\"indexRefName\":\"kibanaSavedObjectMeta.searchSourceJSON.index\"}"
+    },
+    "sort": [["@timestamp", "desc"]],
+    "timeRestore": false,
+    "title": "[Reporting API Events]"
+  },
+  "coreMigrationVersion": "8.8.0",
+  "created_at": "2025-04-15T18:56:04.606Z",
+  "created_by": "u_Cl0X07Gfgvg0DTl3YJqp6GtK2Lm9cb2eztknHx1bLko_0",
+  "id": "reporting_api-search",
+  "managed": false,
+  "references": [
+    {
+      "id": "reporting_api-pattern",
+      "name": "kibanaSavedObjectMeta.searchSourceJSON.index",
+      "type": "index-pattern"
+    }
+  ],
+  "type": "search",
+  "typeMigrationVersion": "10.5.0",
+  "updated_at": "2025-04-16T12:37:53.347Z",
+  "updated_by": "u_Cl0X07Gfgvg0DTl3YJqp6GtK2Lm9cb2eztknHx1bLko_0",
+  "version": "WzIyMTg1MSw5NF0="
+}

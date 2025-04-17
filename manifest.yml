@@ -1,7 +1,7 @@
 format_version: 3.1.4
 name: reporting_api
 title: Reporting API Events
-version: 0.2.1
+version: 0.2.2
 description: >-
   This integration accepts reporting API events such as content-security-policy violation reports, crash logs and network error logs.
 type: integration
