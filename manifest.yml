@@ -1,7 +1,7 @@
 format_version: 3.1.4
 name: reporting_api
 title: Reporting API Events
-version: 0.2.2
+version: 0.3.0
 description: >-
   This integration accepts reporting API events such as content-security-policy violation reports, crash logs and network error logs.
 type: integration
@@ -28,3 +28,16 @@ icons:
     title: Reporting API Events Logo
     size: 32x32
     type: image/svg+xml
+screenshots:
+  - src: /img/reporting_api_events-overview_dashboard_1.png
+    title: Reporting API Events Overview Dashboard (1)
+    size: 3360x2100
+    type: image/png
+  - src: /img/reporting_api_events-overview_dashboard_2.png
+    title: Reporting API Events Overview Dashboard (2)
+    size: 3360x2100
+    type: image/png
+  - src: /img/reporting_api_events-csp_overview_dashboard.png
+    title: Reporting API Events CSP Overview Dashboard
+    size: 3360x2100
+    type: image/png
