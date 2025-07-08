@@ -1,7 +1,7 @@
 # Reporting API Events Integration
 
 > [!IMPORTANT]
-> v0.4.0 and above has a dependency on Beats v8.19.0+ or v9.0.2+ ([see PR](https://github.com/elastic/beats/pull/44387))
+> v0.4.0 and above of this integration has a dependency on Beats v8.19.0+ or v9.0.2+ ([see PR](https://github.com/elastic/beats/pull/44387)). As such please use an [older release](https://github.com/simonhearne/reporting_api/releases/tag/v0.3.0) if your Beats or Agent version does not meet this requirement.
 
 ## Overview
 
