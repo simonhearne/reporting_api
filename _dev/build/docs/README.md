@@ -1,5 +1,8 @@
 # Reporting API Events Integration
 
+> [!IMPORTANT]
+> v0.4.0 and above of this integration has a dependency on Beats v8.19.0+ or v9.0.2+ ([see PR](https://github.com/elastic/beats/pull/44387)). As such please use an [older release](https://github.com/simonhearne/reporting_api/releases/tag/v0.3.0) if your Beats or Agent version does not meet this requirement.
+
 ## Overview
 
 The Reporting API Events integration allows you to monitor security and observability events emitted by browsers.
@@ -25,9 +28,6 @@ This integration supports all report types from all API specifications.
 
 ## Limitations
 
-Currently the Agent integration cannot exist independently, as the filebeat `http_endpoint` module does not support the HTTP OPTIONS preflight request mechanism.
-Until [#43930](https://github.com/elastic/beats/issues/43930) is resolved you will require a reverse proxy or edge function / worker to respond correctly to browser preflight requests. The issue above documents the requirements.
-
 If you choose to add the `logs-reporting_api.*` data stream to the Observability application settings for error documents, clicking on an error group from the Observability application will currently result in an error. This is because the Reporting API events cannot be associated with any specific transaction - the APIs are privacy-preserving and all events are anonymous.
 
 Browser support is complex. Some browsers will include a `user-agent` header in their reports, others won't. Some will send permissions policy violation reports, others won't. The reports received by this integration are to be considered a sample and not representative of all browsers.
@@ -38,7 +38,7 @@ Browser support is complex. Some browsers will include a `user-agent` header in 
 
 * At least one publicly-accessible host on which to install Elastic Agent and the Reporting API Events integration
 * DNS name with valid TLS certificate, or a CDN property, which resolve to the host(s) with the integration installed
-* Ability to update response headers on HTML documents
+* The ability to update response headers on your website's HTML documents
 
 ## Setup
 
@@ -58,8 +58,6 @@ curl -XPOST \
 1. Create or update the relevant response headers on your HTML documents (e.g. `report-to`, `report-uri`, `reporting-endpoints`) to include the new reporting endpoint, including the relevant path if configured in the integration
 1. Validate that events are appearing in the `logs-reporting_api.*` data stream
 1. (optionally) update the `Indices` [settings](https://www.elastic.co/docs/solutions/observability/apm/applications-ui-settings#apm-indices-settings) in the Observability application to include the `logs-reporting_api.*` data stream in the `Error Indices` input
-
-**Temporarily**: a CDN configuration or reverse proxy is required to return a valid response to preflight requests from browsers, as documented in [#43930](https://github.com/elastic/beats/issues/43930).
 
 There are a number of configuration items available in the integration:
 

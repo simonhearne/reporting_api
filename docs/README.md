@@ -38,7 +38,7 @@ Browser support is complex. Some browsers will include a `user-agent` header in 
 
 * At least one publicly-accessible host on which to install Elastic Agent and the Reporting API Events integration
 * DNS name with valid TLS certificate, or a CDN property, which resolve to the host(s) with the integration installed
-* Ability to update response headers on HTML documents
+* The ability to update response headers on your website's HTML documents
 
 ## Setup
 
@@ -58,8 +58,6 @@ curl -XPOST \
 1. Create or update the relevant response headers on your HTML documents (e.g. `report-to`, `report-uri`, `reporting-endpoints`) to include the new reporting endpoint, including the relevant path if configured in the integration
 1. Validate that events are appearing in the `logs-reporting_api.*` data stream
 1. (optionally) update the `Indices` [settings](https://www.elastic.co/docs/solutions/observability/apm/applications-ui-settings#apm-indices-settings) in the Observability application to include the `logs-reporting_api.*` data stream in the `Error Indices` input
-
-**Temporarily**: a CDN configuration or reverse proxy is required to return a valid response to preflight requests from browsers, as documented in [#43930](https://github.com/elastic/beats/issues/43930).
 
 There are a number of configuration items available in the integration:
 
