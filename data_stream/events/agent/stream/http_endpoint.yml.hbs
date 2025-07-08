@@ -57,4 +57,9 @@ processors:
       fields:
         remove_agent_fields: {{remove_agent_fields}}
         o11y_fields_enabled: {{o11y_fields_enabled}}
-        
+options_headers:
+  Connection: keep-alive
+  Access-Control-Allow-Origin: "*"
+  Access-Control-Allow-Methods: [POST]
+  Access-Control-Allow-Headers: [content-type]
+  Access-Control-Max-Age: 86400
